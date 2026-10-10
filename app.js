@@ -549,10 +549,15 @@
       $('previewHint').textContent = 'Wow, that day is full of stickers! 🎉';
       return;
     }
+    // Words sit in the middle, so new stickers land above or below them.
+    const hasWords = !!(day.text && day.text.trim());
+    const y = hasWords
+      ? (Math.random() < 0.5 ? 0.2 : 0.78) + Math.random() * 0.06
+      : 0.3 + Math.random() * 0.4;
     day.stickers.push({
       e: emoji,
       x: 0.4 + Math.random() * 0.4,
-      y: 0.3 + Math.random() * 0.3,
+      y,
       s: 1,
       r: Math.round((Math.random() - 0.5) * 20),
     });
