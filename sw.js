@@ -1,5 +1,5 @@
 // Offline support: try the network first so updates show up right away, fall back to the cache offline.
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = `eliza-calendar-${VERSION}`;
 const FILES = [
   './',
@@ -28,7 +28,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
-    fetch(event.request)
+    // 'no-cache' checks with the server every time instead of reusing GitHub's 10-minute browser cache.
+    fetch(event.request, { cache: 'no-cache' })
       .then((res) => {
         if (res.ok && new URL(event.request.url).origin === self.location.origin) {
           const copy = res.clone();
