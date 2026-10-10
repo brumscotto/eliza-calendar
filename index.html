@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Eliza's Calendar</title>
+  <meta name="theme-color" content="#ff7eb6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Calendar">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="particles" aria-hidden="true"></div>
+
+  <main id="app">
+    <div class="garland" id="garland" aria-hidden="true"></div>
+    <header class="month-header">
+      <button class="nav-btn" id="prevBtn" aria-label="Last month">◀</button>
+      <div class="month-title">
+        <span class="month-deco" id="decoLeft"></span>
+        <h1 class="ribbon"><span id="monthName"></span> <span id="yearName"></span></h1>
+        <span class="month-deco" id="decoRight"></span>
+      </div>
+      <button class="nav-btn" id="nextBtn" aria-label="Next month">▶</button>
+    </header>
+
+    <div class="toolbar">
+      <button class="pill-btn" id="todayBtn">⭐ Today</button>
+      <button class="pill-btn" id="themeBtn">🎨 Decorate this month</button>
+      <button class="pill-btn small" id="grownupBtn" aria-label="Grown-up settings">⚙️</button>
+    </div>
+
+    <div class="cal-frame" id="calFrame">
+      <div class="cal-inner">
+        <div class="weekdays" id="weekdays"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Day editor -->
+  <div class="sheet-backdrop" id="dayBackdrop" hidden>
+    <section class="day-editor" role="dialog" aria-modal="true" aria-labelledby="dayTitle">
+      <header class="editor-head">
+        <h2 id="dayTitle"></h2>
+        <button class="done-btn" id="dayDone">✓ Done</button>
+      </header>
+      <div class="editor-body">
+        <div class="preview-wrap">
+          <div class="day-cell big" id="preview"></div>
+          <div class="sticker-tools" id="stickerTools" hidden>
+            <button data-act="smaller" aria-label="Smaller">➖</button>
+            <button data-act="bigger" aria-label="Bigger">➕</button>
+            <button data-act="rotate" aria-label="Turn">🔄</button>
+            <button data-act="front" aria-label="Bring to front">⬆️</button>
+            <button data-act="delete" aria-label="Remove">🗑️</button>
+          </div>
+          <p class="hint" id="previewHint">Tap a sticker to add it. Drag it to move it!</p>
+        </div>
+
+        <div class="editor-controls">
+          <label class="field-label" for="dayText">✏️ Words</label>
+          <textarea id="dayText" maxlength="80" rows="2" placeholder="What's happening today?" autocomplete="off" autocapitalize="sentences" spellcheck="true"></textarea>
+
+          <div class="swatch-row">
+            <span class="field-label small">Word color</span>
+            <div class="swatches" id="textColors"></div>
+          </div>
+          <div class="swatch-row">
+            <span class="field-label small">Day color</span>
+            <div class="swatches" id="dayColors"></div>
+          </div>
+
+          <div class="sticker-tabs" id="stickerTabs"></div>
+          <div class="sticker-tray" id="stickerTray"></div>
+
+          <button class="clear-btn" id="clearDay">🧽 Clear this day</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Theme picker -->
+  <div class="sheet-backdrop" id="themeBackdrop" hidden>
+    <section class="theme-sheet" role="dialog" aria-modal="true" aria-labelledby="themeTitle">
+      <header class="editor-head">
+        <h2 id="themeTitle">Decorate <span id="themeMonth"></span></h2>
+        <button class="done-btn" id="themeDone">✓ Done</button>
+      </header>
+      <h3 class="sheet-sub">Pick a theme</h3>
+      <div class="theme-grid" id="themeGrid"></div>
+      <h3 class="sheet-sub">Pick a border</h3>
+      <div class="font-grid" id="frameGrid"></div>
+      <h3 class="sheet-sub">Pick a top decoration</h3>
+      <div class="font-grid" id="garlandGrid"></div>
+      <h3 class="sheet-sub">Pick a letter style</h3>
+      <div class="font-grid" id="fontGrid"></div>
+      <h3 class="sheet-sub">Magic sparkles</h3>
+      <div class="font-grid">
+        <button class="font-card" id="particlesToggle"></button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Grown-up settings -->
+  <div class="sheet-backdrop" id="grownupBackdrop" hidden>
+    <section class="grownup-sheet" role="dialog" aria-modal="true" aria-labelledby="grownupTitle">
+      <header class="editor-head">
+        <h2 id="grownupTitle">Grown-ups</h2>
+        <button class="done-btn" id="grownupDone">✓ Done</button>
+      </header>
+      <p>Everything is saved on this iPad. Save a backup now and then, just in case.</p>
+      <div class="grownup-actions">
+        <button class="pill-btn" id="exportBtn">💾 Save a backup</button>
+        <button class="pill-btn" id="importBtn">📂 Load a backup</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+      <p class="status" id="grownupStatus"></p>
+    </section>
+  </div>
+
+  <div class="confirm-backdrop" id="confirmBackdrop" hidden>
+    <div class="confirm-box">
+      <p id="confirmText"></p>
+      <div class="confirm-actions">
+        <button class="pill-btn" id="confirmNo">No</button>
+        <button class="pill-btn danger" id="confirmYes">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
